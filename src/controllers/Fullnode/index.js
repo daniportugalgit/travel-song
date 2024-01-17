@@ -1,0 +1,60 @@
+const Env = require("../../base/Env");
+const RPC_URL = Env.getString("RPC_URL");
+
+const axios = require("axios");
+
+const { print, colors } = require("../../base/log");
+
+class Fullnode {
+  async _send(method, params) {
+    const rpcObject = {
+      method,
+      params,
+      id: 1,
+      jsonrpc: "2.0",
+    };
+
+    //print(colors.h_blue, `Fullnode.SEND: ${JSON.stringify(rpcObject)}`);
+
+    const rpcResponse = await axios.post(RPC_URL, rpcObject);
+
+    return rpcResponse?.data?.result;
+  }
+
+  async fetchBlock(blockNumber) {
+    const method = "eth_getBlockByNumber";
+    const params = [blockNumber.toString(), true];
+
+    return this._send(method, params);
+  }
+
+  async fetchLatestBlock() {
+    const method = "eth_getBlockByNumber";
+    const params = ["latest", false];
+
+    return this._send(method, params);
+  }
+
+  async fetchTransaction(txHash) {
+    const method = "eth_getTransactionByHash";
+    const params = [txHash];
+
+    return this._send(method, params);
+  }
+
+  async fetchTxReceipt(txHash) {
+    const method = "eth_getTransactionReceipt";
+    const params = [txHash];
+
+    return this._send(method, params);
+  }
+
+  async blockNumber() {
+    const method = "eth_blockNumber";
+    const params = [];
+
+    return this._send(method, params);
+  }
+}
+
+module.exports = new Fullnode();

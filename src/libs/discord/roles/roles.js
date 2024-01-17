@@ -1,0 +1,27 @@
+const roles = [
+  { name: "MH Holder Tier F", id: "963160904663445575" },
+  { name: "MH Holder Tier E", id: "963161243001159730" },
+  { name: "MH Holder Tier D", id: "963161554537312306" },
+  { name: "MH Holder Tier C", id: "963161714109591663" },
+  { name: "MH Holder Tier B", id: "963161828211454044" },
+  { name: "MH Holder Tier A", id: "963161944750166108" },
+  { name: "MH Holder Tier S", id: "963162063692234842" },
+  { name: "MH Holder Tier SS", id: "963162173301985280" },
+  { name: "Stasher Level 1", id: "1139639195602780271" },
+  { name: "Stasher Level 2", id: "1139639995418820760" },
+  { name: "Stasher Level 3", id: "1139640056311730176" },
+  { name: "Stasher Level 4", id: "1139640117426913311" },
+  { name: "Stasher Level 5", id: "1139640201896001677" },
+  { name: "Stasher Level 6", id: "1139644467511558145" },
+  { name: "Stasher Level 7", id: "1139644561271042058" },
+  { name: "Stasher Level 8", id: "1139644661447790682" },
+  { name: "Stasher Level 9", id: "1139644714086314034" },
+  { name: "Stasher Level 10", id: "1139644764384395284" },
+  { name: "Predator Watch", id: "1154852417670742016" },
+  { name: "Beastmaster", id: "1149766819373125692" },
+  { name: "Verified Player", id: "1163532021650432110" },
+  { name: "NOT VERIFIED", id: "1187352526031441990" },
+  { name: "Community Member", id: "894349432215199794" },
+];
+
+module.exports = { roles };
