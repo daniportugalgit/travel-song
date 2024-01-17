@@ -25,6 +25,8 @@ function get() {
     contractAddress: { type: String, index: true }, // if this is a contract creation transaction
     eventEmitters: { type: Array, index: true }, // array of addresses that emitted events in this transaction
     status: Number, // 0 for failed, 1 for success
+    input: String, // hex string of the input data
+    value: String, // value of the transaction in wei of KOZI
   });
 }
 

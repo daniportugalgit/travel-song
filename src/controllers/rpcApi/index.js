@@ -35,7 +35,7 @@ class RpcApi {
         { from: address },
         { to: address },
         { contractAddress: address },
-        { eventEmitters: address },
+        //{ eventEmitters: address },
       ],
     });
 
@@ -46,7 +46,7 @@ class RpcApi {
           { from: address },
           { to: address },
           { contractAddress: address },
-          { eventEmitters: address },
+          //{ eventEmitters: address },
         ],
       })
       .sort({ blockNumber: -1, transactionIndex: -1 })
@@ -57,6 +57,21 @@ class RpcApi {
       success: true,
       txList,
       totalCount,
+    };
+
+    return result;
+  }
+
+  async latestTxs({ limit = 10 }) {
+    // we return the `limit` latest transactions
+    const txList = await Mongo.model("transactions")
+      .find({})
+      .sort({ blockNumber: -1, transactionIndex: -1 })
+      .limit(limit);
+
+    const result = {
+      success: true,
+      txList,
     };
 
     return result;

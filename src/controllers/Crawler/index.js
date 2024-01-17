@@ -55,13 +55,22 @@ class Crawler {
     const blockNumber = parseInt(blockData.number);
     print(colors.h_cyan, `🎼 processBlock ${blockNumber}`);
 
-    // we'll fetch all the transaction receipts from the RPC
+    // we fetch all the transaction receipts from the RPC
     const txReceipts = await Promise.all(
       blockData.transactions.map((tx) => Fullnode.fetchTxReceipt(tx.hash))
     );
 
     // let's now process each receipt with the processReceipt function
     const processedReceipts = txReceipts.map((receipt) => this.processReceipt(receipt));
+
+    // now we add the `input` and the `value` fields from the transaction to the receipt
+    processedReceipts.forEach((receipt) => {
+      const tx = blockData.transactions.find((tx) => tx.hash === receipt.hash);
+      if (tx) {
+        receipt.input = tx.input;
+        receipt.value = tx.value;
+      }
+    });
 
     // now order the receipts by block number, then by transaction index (only if they're in the same block)
     processedReceipts.sort((a, b) => {
@@ -205,6 +214,8 @@ class Crawler {
       contractAddress: "",
       eventEmitters: [],
       status: parseInt(receiptData?.status),
+      input: receiptData?.input,
+      value: receiptData?.value,
     };
 
     if (receiptData?.from) {
