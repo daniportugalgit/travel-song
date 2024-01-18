@@ -6,6 +6,7 @@ const { ethers } = require("ethers");
 //const Discord = require("../../libs/discord");
 
 const POLLING_INTERVAL_MS = Env.getNumber("POLLING_INTERVAL_MS") || 10000;
+const POLLING_SIZE = Env.getNumber("POLLING_SIZE") || 12;
 
 /** Here's how this works:
   - Every 10 seconds, Travel Song Indexer (this app) will check for new blocks
@@ -140,7 +141,7 @@ class Crawler {
     // we'll fetch the next 10 blocks, so let's clear the polling interval
     clearInterval(this.pollingInterval);
 
-    const highestBlockToFetch = Math.min(currentChainHeight, latesBlockProcessed + 10);
+    const highestBlockToFetch = Math.min(currentChainHeight, latesBlockProcessed + POLLING_SIZE);
     const manyBlocks = await this.fetchManyBlocks(latesBlockProcessed + 1, highestBlockToFetch);
 
     // and we'll process it

@@ -6,6 +6,11 @@ const axios = require("axios");
 const { print, colors } = require("../../base/log");
 
 class Fullnode {
+  constructor() {
+    this.currentBlockHeight = 0;
+    this.blockHeightUpdatedAt = 0;
+  }
+
   async _send(method, params) {
     const rpcObject = {
       method,
@@ -49,11 +54,21 @@ class Fullnode {
     return this._send(method, params);
   }
 
-  async blockNumber() {
+  // we cache the block height for 10 seconds
+  async blockNumber(forceRefresh = false) {
+    if (!forceRefresh && this.blockHeightUpdatedAt > Date.now() - 10000) {
+      return this.currentBlockHeight;
+    }
+
     const method = "eth_blockNumber";
     const params = [];
 
-    return this._send(method, params);
+    const result = await this._send(method, params);
+
+    this.currentBlockHeight = parseInt(result, 16);
+    this.blockHeightUpdatedAt = Date.now();
+
+    return result;
   }
 }
 

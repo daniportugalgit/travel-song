@@ -2,22 +2,9 @@
 
 const Mongo = require("../../libs/db/mongo");
 const { ethers } = require("ethers");
+const Fullnode = require("../Fullnode");
 
 class RpcApi {
-  constructor() {}
-
-  //##################################################################
-  // Commands:
-  async doSomething(params) {
-    const result = {
-      success: true,
-      paramsReceived: params,
-      message: "Hello World!",
-    };
-
-    return result;
-  }
-
   async txsByAddress({ address, page = 1, limit = 25 }) {
     try {
       address = ethers.getAddress(address);
@@ -53,10 +40,13 @@ class RpcApi {
       .limit(limit)
       .skip((page - 1) * limit);
 
+    const currentBlockHeight = await Fullnode.blockNumber();
+
     const result = {
       success: true,
       txList,
       totalCount,
+      currentBlockHeight,
     };
 
     return result;
@@ -69,9 +59,13 @@ class RpcApi {
       .sort({ blockNumber: -1, transactionIndex: -1 })
       .limit(limit);
 
+    const currentBlockHeight = await Fullnode.blockNumber();
+
     const result = {
       success: true,
       txList,
+      totalCount: txList.length,
+      currentBlockHeight,
     };
 
     return result;
