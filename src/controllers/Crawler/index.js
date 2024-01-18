@@ -54,7 +54,7 @@ class Crawler {
   // This is where we process the block data
   async processBlock(blockData) {
     const blockNumber = parseInt(blockData.number);
-    print(colors.h_cyan, `🎼 processBlock ${blockNumber}`);
+    //print(colors.h_cyan, `🎼 processBlock ${blockNumber}`);
 
     // we fetch all the transaction receipts from the RPC
     const txReceipts = await Promise.all(
