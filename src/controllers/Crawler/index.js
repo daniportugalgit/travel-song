@@ -39,7 +39,7 @@ class Crawler {
     const blockNumberToFetch = latestBlockNumber + 1;
 
     // get the latest block from the RPC
-    print(colors.yellow, `🎼 Fetching Block ${blockNumberToFetch}...`);
+    //print(colors.yellow, `🎼 Fetching Block ${blockNumberToFetch}...`);
     const rpcBlock = await Fullnode.fetchBlock(blockNumberToFetch);
 
     if (!rpcBlock || !rpcBlock.hash) {
@@ -124,7 +124,7 @@ class Crawler {
       } else {
         if (!this.isProcessingManyBlocks) {
           // we're done
-          print(colors.green, `🎼 Synced with block tip: ${blockNumberToFetch}`);
+          //print(colors.green, `🎼 Synced with block tip: ${blockNumberToFetch}`);
         }
       }
     }
