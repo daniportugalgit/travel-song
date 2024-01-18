@@ -3,6 +3,7 @@
 const Mongo = require("../../libs/db/mongo");
 const { ethers } = require("ethers");
 const Fullnode = require("../Fullnode");
+const { print, colors } = require("../../base/log");
 
 class RpcApi {
   async txsByAddress({ address, page = 1, limit = 25 }) {
@@ -59,14 +60,35 @@ class RpcApi {
       .sort({ blockNumber: -1, transactionIndex: -1 })
       .limit(limit);
 
-    const currentBlockHeight = await Fullnode.blockNumber();
-
     const result = {
       success: true,
       txList,
-      totalCount: txList.length,
-      currentBlockHeight,
     };
+
+    return result;
+  }
+
+  async latestSummary({ limit = 10 }) {
+    // here we'll get the latest block and the latest transactions
+    const latestBlock = await Fullnode.fetchLatestBlock();
+
+    let latestTxsResult;
+    if (latestBlock.transactions.length >= limit) {
+      latestTxsResult = [];
+    } else {
+      latestTxsResult = await this.latestTxs({ limit: limit - latestBlock.transactions.length });
+    }
+
+    const result = {
+      success: true,
+      block: latestBlock,
+      txList: latestTxsResult.txList,
+    };
+
+    print(
+      colors.green,
+      `🎼 latestSummary | block: ${latestBlock.number} | txs: ${latestTxsResult.txList.length}`
+    );
 
     return result;
   }

@@ -9,6 +9,8 @@ class Fullnode {
   constructor() {
     this.currentBlockHeight = 0;
     this.blockHeightUpdatedAt = 0;
+    this.blockContentsUpdatedAt = 0;
+    this.latestBlock = null;
   }
 
   async _send(method, params) {
@@ -33,11 +35,22 @@ class Fullnode {
     return this._send(method, params);
   }
 
-  async fetchLatestBlock() {
+  async fetchLatestBlock(forceRefresh = false) {
+    if (!forceRefresh && this.blockContentsUpdatedAt > Date.now() - 10000) {
+      return this.latestBlock;
+    }
+
     const method = "eth_getBlockByNumber";
     const params = ["latest", false];
 
-    return this._send(method, params);
+    const result = await this._send(method, params);
+
+    this.latestBlock = result;
+    this.currentBlockHeight = parseInt(result.number, 16);
+    this.blockHeightUpdatedAt = Date.now();
+    this.blockContentsUpdatedAt = Date.now();
+
+    return result;
   }
 
   async fetchTransaction(txHash) {

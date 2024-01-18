@@ -6,7 +6,7 @@ const { ethers } = require("ethers");
 //const Discord = require("../../libs/discord");
 
 const POLLING_INTERVAL_MS = Env.getNumber("POLLING_INTERVAL_MS") || 10000;
-const POLLING_SIZE = Env.getNumber("POLLING_SIZE") || 12;
+const POLLING_SIZE = Env.getNumber("POLLING_SIZE") || 10;
 
 /** Here's how this works:
   - Every 10 seconds, Travel Song Indexer (this app) will check for new blocks
