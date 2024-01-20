@@ -41,7 +41,7 @@ class Fullnode {
     }
 
     const method = "eth_getBlockByNumber";
-    const params = ["latest", false];
+    const params = ["latest", true];
 
     const result = await this._send(method, params);
 

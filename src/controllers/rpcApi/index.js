@@ -6,7 +6,7 @@ const Fullnode = require("../Fullnode");
 const { print, colors } = require("../../base/log");
 
 class RpcApi {
-  async txsByAddress({ address, page = 1, limit = 25 }) {
+  async txsByAddress({ address, page = 1, limit = 25, includeEvents = false }) {
     try {
       address = ethers.getAddress(address);
       console.log(`🎼 txsByAddress ${address} | page: ${page} | limit: ${limit}`);
@@ -17,29 +17,43 @@ class RpcApi {
       };
     }
 
-    // we count how many transactions there are for this address (collection "transactions)"
-    const totalCount = await Mongo.count("transactions", {
-      $or: [
-        { from: address },
-        { to: address },
-        { contractAddress: address },
-        //{ eventEmitters: address },
-      ],
-    });
+    let totalCount, txList;
 
-    // then we return the transactions for this address considering the page and limit
-    const txList = await Mongo.model("transactions")
-      .find({
+    if (includeEvents) {
+      totalCount = await Mongo.count("transactions", {
         $or: [
           { from: address },
           { to: address },
           { contractAddress: address },
-          //{ eventEmitters: address },
+          { eventEmitters: address },
         ],
-      })
-      .sort({ blockNumber: -1, transactionIndex: -1 })
-      .limit(limit)
-      .skip((page - 1) * limit);
+      });
+
+      txList = await Mongo.model("transactions")
+        .find({
+          $or: [
+            { from: address },
+            { to: address },
+            { contractAddress: address },
+            { eventEmitters: address },
+          ],
+        })
+        .sort({ blockNumber: -1, transactionIndex: -1 })
+        .limit(limit)
+        .skip((page - 1) * limit);
+    } else {
+      totalCount = await Mongo.count("transactions", {
+        $or: [{ from: address }, { to: address }, { contractAddress: address }],
+      });
+
+      txList = await Mongo.model("transactions")
+        .find({
+          $or: [{ from: address }, { to: address }, { contractAddress: address }],
+        })
+        .sort({ blockNumber: -1, transactionIndex: -1 })
+        .limit(limit)
+        .skip((page - 1) * limit);
+    }
 
     const currentBlockHeight = await Fullnode.blockNumber();
 
