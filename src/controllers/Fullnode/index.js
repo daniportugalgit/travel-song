@@ -83,6 +83,15 @@ class Fullnode {
 
     return result;
   }
+
+  async balanceOf(address) {
+    const method = "eth_getBalance";
+    const params = [address, "latest"];
+
+    const result = await this._send(method, params);
+
+    return result;
+  }
 }
 
 module.exports = new Fullnode();

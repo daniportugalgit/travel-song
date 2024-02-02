@@ -3,7 +3,7 @@ const Mongo = require("../../libs/db/mongo");
 const Fullnode = require("../Fullnode");
 const { colors, print } = require("../../base/log");
 const { ethers } = require("ethers");
-//const Discord = require("../../libs/discord");
+const SystemWallets = require("../../base/SystemWallets");
 
 const POLLING_INTERVAL_MS = Env.getNumber("POLLING_INTERVAL_MS") || 10000;
 const POLLING_SIZE = Env.getNumber("POLLING_SIZE") || 10;
@@ -56,6 +56,9 @@ class Crawler {
     const blockNumber = parseInt(blockData.number);
     //print(colors.h_cyan, `🎼 processBlock ${blockNumber}`);
 
+    // we create a set of all the addresses that are involved in this block
+    const addresses = new Set();
+
     // we fetch all the transaction receipts from the RPC
     const txReceipts = await Promise.all(
       blockData.transactions.map((tx) => Fullnode.fetchTxReceipt(tx.hash))
@@ -70,6 +73,19 @@ class Crawler {
       if (tx) {
         receipt.input = tx.input;
         receipt.value = tx.value;
+
+        if (tx.value > 0) {
+          // if the transaction has a value, we'll add the sender and receiver to the addresses set
+          if (!SystemWallets.includes(ethers.getAddress(receipt.from))) {
+            addresses.add(ethers.getAddress(receipt.from));
+          }
+
+          if (receipt.to) {
+            if (!SystemWallets.includes(ethers.getAddress(receipt.to))) {
+              addresses.add(ethers.getAddress(receipt.to));
+            }
+          }
+        }
       }
     });
 
@@ -83,10 +99,6 @@ class Crawler {
     });
 
     // now save all the receipts to the database:
-    // we'll use the transactions collection
-    // await Mongo.insertMany("transactions", processedReceipts);
-    // actually, we will only add the receipts that have not been added yet
-    //await Mongo.insertMany("transactions", processedReceipts);
     const bulkReceipts = [];
     processedReceipts.forEach(function (receipt) {
       bulkReceipts.push({
@@ -100,6 +112,26 @@ class Crawler {
     if (bulkReceipts.length > 0) {
       await Mongo.model("transactions").bulkWrite(bulkReceipts);
       print(colors.green, `🎼 Processed ${processedReceipts.length} receipts`);
+
+      // now we'll update the balances of all the addresses that are involved in this block
+      const bulkBalances = [];
+      addresses.forEach(async (address) => {
+        // fetch the address' balance directly from the RPC
+        const balance = await Fullnode.balanceOf(address);
+
+        bulkBalances.push({
+          updateOne: {
+            filter: { address },
+            update: { $set: { address, updatedAtBlock: blockNumber, kozi: balance } },
+            upsert: true,
+          },
+        });
+      });
+
+      if (bulkBalances.length > 0) {
+        await Mongo.model("balances").bulkWrite(bulkBalances);
+        print(colors.green, `🎼 Processed ${bulkBalances.length} balances`);
+      }
     } else {
       //print(colors.cyan, `🎼 ZERO receipts inserted in database for block ${blockNumber}`);
     }
