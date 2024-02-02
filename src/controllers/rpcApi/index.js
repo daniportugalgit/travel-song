@@ -110,14 +110,14 @@ class RpcApi {
   }
 
   async topAddresses(limit = 25) {
-    let addressList = await Mongo.model("balances")
+    let addresses = await Mongo.model("balances")
       .find({ address: { $nin: [...SISTEM_WALLETS] } })
       .sort({ kozi: -1 })
       .collation({ locale: "en_US", numericOrdering: true })
       .limit(limit);
 
     // now let's cleanup the list removing the propertyes _id, __v, and updatedAtBlock
-    addressList = addressList.map((address) => {
+    addresses = addresses.map((address) => {
       return {
         address: address.address,
         kozi: address.kozi,
@@ -126,7 +126,7 @@ class RpcApi {
 
     const result = {
       success: true,
-      addressList,
+      addresses,
     };
 
     return result;
