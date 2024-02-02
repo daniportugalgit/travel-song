@@ -109,7 +109,7 @@ class RpcApi {
   }
 
   async topAddresses(limit = 25) {
-    addressList = await Mongo.model("balances")
+    const addressList = await Mongo.model("balances")
       .find({ address: { $nin: SystemWallets } })
       .sort({ kozi: -1 })
       .limit(limit);
