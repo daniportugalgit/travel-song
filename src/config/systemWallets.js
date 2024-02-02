@@ -33,4 +33,6 @@ const SystemWallets = [
   "0x0000000000000000000000000000000000000000", // Blackhole
 ];
 
-export default SystemWallets;
+module.export = {
+  SystemWallets
+}

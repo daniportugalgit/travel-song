@@ -3,7 +3,7 @@ const Mongo = require("../../libs/db/mongo");
 const Fullnode = require("../Fullnode");
 const { colors, print } = require("../../base/log");
 const { ethers } = require("ethers");
-const SystemWallets = require("../../base/SystemWallets");
+const SystemWallets = require("../../config/systemWallets");
 
 const POLLING_INTERVAL_MS = Env.getNumber("POLLING_INTERVAL_MS") || 10000;
 const POLLING_SIZE = Env.getNumber("POLLING_SIZE") || 10;
