@@ -121,6 +121,17 @@ class RpcApi {
 
     return result;
   }
+
+  async allAddresses(limit = 25) {
+    const addressList = await Mongo.model("balances").find({}).sort({ kozi: -1 }).limit(limit);
+
+    const result = {
+      success: true,
+      addressList,
+    };
+
+    return result;
+  }
 }
 
 module.exports = new RpcApi();

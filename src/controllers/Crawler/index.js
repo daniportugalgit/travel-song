@@ -4,7 +4,6 @@ const Fullnode = require("../Fullnode");
 const { colors, print } = require("../../base/log");
 const { ethers } = require("ethers");
 
-
 const POLLING_INTERVAL_MS = Env.getNumber("POLLING_INTERVAL_MS") || 10000;
 const POLLING_SIZE = Env.getNumber("POLLING_SIZE") || 10;
 
@@ -75,6 +74,11 @@ class Crawler {
         receipt.value = tx.value;
 
         if (tx.value > 0) {
+          print(
+            colors.h_cyan,
+            `🎼 Transaction with value: ${receipt.value} | from: ${receipt.from} | to: ${receipt?.to}`
+          );
+
           // if the transaction has a value, we'll add the sender and receiver to the koziChangeBalances set
           koziChangeBalances.add(ethers.getAddress(receipt.from));
 
@@ -115,6 +119,8 @@ class Crawler {
         // fetch the address' balance directly from the RPC
         const balance = await Fullnode.balanceOf(address);
 
+        print(colors.cyan, `🎼 Balance of ${address} is ${balance}`);
+
         bulkBalances.push({
           updateOne: {
             filter: { address },
@@ -126,7 +132,7 @@ class Crawler {
 
       if (bulkBalances.length > 0) {
         await Mongo.model("balances").bulkWrite(bulkBalances);
-        print(colors.green, `🎼 Processed ${bulkBalances.length} balances`);
+        print(colors.h_cyan, `🎼 Processed ${bulkBalances.length} balances`);
       }
     } else {
       //print(colors.cyan, `🎼 ZERO receipts inserted in database for block ${blockNumber}`);
@@ -149,11 +155,6 @@ class Crawler {
 
       if (currentChainHeight > blockNumberToFetch && !this.isProcessingManyBlocks) {
         this.enterSyncMode(currentChainHeight, blockNumber);
-      } else {
-        if (!this.isProcessingManyBlocks) {
-          // we're done
-          //print(colors.green, `🎼 Synced with block tip: ${blockNumberToFetch}`);
-        }
       }
     }
   }
