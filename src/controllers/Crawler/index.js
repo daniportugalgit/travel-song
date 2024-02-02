@@ -133,6 +133,8 @@ class Crawler {
       if (bulkBalances.length > 0) {
         await Mongo.model("balances").bulkWrite(bulkBalances);
         print(colors.h_cyan, `🎼 Processed ${bulkBalances.length} balances`);
+      } else {
+        print(colors.red, `🎼 bulkBalances has zero members: ${JSON.stringify(bulkBalances)}`);
       }
     } else {
       //print(colors.cyan, `🎼 ZERO receipts inserted in database for block ${blockNumber}`);
