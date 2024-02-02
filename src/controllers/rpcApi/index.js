@@ -116,6 +116,13 @@ class RpcApi {
       .collation({ locale: "en_US", numericOrdering: true })
       .limit(limit);
 
+    // now let's cleanup the list removing the propertyes _id, __v, and updatedAtBlock
+    addressList.forEach((address) => {
+      delete address._id;
+      delete address.__v;
+      delete address.updatedAtBlock;
+    });
+
     const result = {
       success: true,
       addressList,
