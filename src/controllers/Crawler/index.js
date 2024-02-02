@@ -1,4 +1,5 @@
 const Env = require("../../base/Env");
+const BigNumber = require("bignumber.js");
 const Mongo = require("../../libs/db/mongo");
 const Fullnode = require("../Fullnode");
 const { colors, print } = require("../../base/log");
@@ -115,26 +116,36 @@ class Crawler {
 
       // now we'll update the balances of all the koziChangeBalances that are involved in this block
       const bulkBalances = [];
-      koziChangeBalances.forEach(async (address) => {
+      const finalAddresses = Array.from(koziChangeBalances);
+
+      for (let i = 0; i < finalAddresses.length; i++) {
+        const address = finalAddresses[i];
         // fetch the address' balance directly from the RPC
         const balance = await Fullnode.balanceOf(address);
-
-        print(colors.cyan, `🎼 Balance of ${address} is ${balance}`);
+        const formattedBalance = ethers.formatEther(balance);
+        print(colors.cyan, `🎼 Balance of ${address} is ${formattedBalance}`);
 
         bulkBalances.push({
           updateOne: {
             filter: { address },
-            update: { $set: { address, updatedAtBlock: blockNumber, kozi: balance } },
+            update: {
+              $set: { address, updatedAtBlock: blockNumber, kozi: formattedBalance },
+            },
             upsert: true,
           },
         });
-      });
+      }
 
       if (bulkBalances.length > 0) {
         await Mongo.model("balances").bulkWrite(bulkBalances);
         print(colors.h_cyan, `🎼 Processed ${bulkBalances.length} balances`);
-      } else {
-        print(colors.red, `🎼 bulkBalances has zero members: ${JSON.stringify(bulkBalances)}`);
+      } else if (koziChangeBalances.size !== 0) {
+        print(
+          colors.red,
+          `🎼 bulkBalances has zero members: ${JSON.stringify(bulkBalances)}, but set has ${
+            koziChangeBalances.size
+          }`
+        );
       }
     } else {
       //print(colors.cyan, `🎼 ZERO receipts inserted in database for block ${blockNumber}`);

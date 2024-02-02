@@ -1,4 +1,4 @@
-const SystemWallets = [
+const SISTEM_WALLETS = [
   "0x00000871604FeC3BAf42e134171A018B8dD2A6A6", // 0xKingdom
   "0xb4B69808c2322849fD894768BC864B54a7E2f13f", // operator (Bk OnKchain)
   "0x5bd09121BA4c26a37460890f63Bf9388e0Aa9359", // validator
@@ -33,6 +33,6 @@ const SystemWallets = [
   "0x0000000000000000000000000000000000000000", // Blackhole
 ];
 
-module.export = {
-  SystemWallets
-}
+module.exports = {
+  SISTEM_WALLETS,
+};

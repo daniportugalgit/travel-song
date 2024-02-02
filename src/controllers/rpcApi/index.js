@@ -2,9 +2,10 @@
 
 const Mongo = require("../../libs/db/mongo");
 const { ethers } = require("ethers");
+
 const Fullnode = require("../Fullnode");
 const { print, colors } = require("../../base/log");
-const { SystemWallets } = require("../../config/systemWallets");
+const { SISTEM_WALLETS } = require("../../config/systemWallets");
 
 class RpcApi {
   async txsByAddress({ address, page = 1, limit = 25, includeEvents = false }) {
@@ -110,8 +111,9 @@ class RpcApi {
 
   async topAddresses(limit = 25) {
     const addressList = await Mongo.model("balances")
-      .find({ address: { $nin: SystemWallets } })
+      .find({ address: { $nin: [...SISTEM_WALLETS] } })
       .sort({ kozi: -1 })
+      .collation({ locale: "en_US", numericOrdering: true })
       .limit(limit);
 
     const result = {
@@ -123,7 +125,11 @@ class RpcApi {
   }
 
   async allAddresses(limit = 25) {
-    const addressList = await Mongo.model("balances").find({}).sort({ kozi: -1 }).limit(limit);
+    const addressList = await Mongo.model("balances")
+      .find({})
+      .sort({ kozi: -1 })
+      .collation({ locale: "en_US", numericOrdering: true })
+      .limit(limit);
 
     const result = {
       success: true,
