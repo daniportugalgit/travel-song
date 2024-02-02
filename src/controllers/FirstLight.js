@@ -13,7 +13,7 @@ const Mongo = require("..//libs/db/mongo");
 
 const transactionsSchema = require("../schemas/transaction"); // stores all transactions
 const latestblocksSchema = require("../schemas/latestblock"); // saves the latest block number
-//const contractsSchema = require("../schemas/contracts"); // holds abis and addresses of contracts
+const balancesSchema = require("../schemas/balance"); // saves the KOZI balances of all addresses
 
 const { print, colors } = require("../base/log");
 
@@ -34,7 +34,7 @@ class FirstLight {
     await Mongo.connect();
     await Mongo.setModel("transactions", transactionsSchema.get());
     await Mongo.setModel("latestblocks", latestblocksSchema.get());
-    //await Mongo.setModel("contracts", contractsSchema.get());
+    await Mongo.setModel("balances", balancesSchema.get());
 
     //await Discord.init();
 
