@@ -4,7 +4,7 @@ const Mongo = require("../../libs/db/mongo");
 const { ethers } = require("ethers");
 const Fullnode = require("../Fullnode");
 const { print, colors } = require("../../base/log");
-const SystemWallets = require("../../config/systemWallets");
+const { SystemWallets } = require("../../config/systemWallets");
 
 class RpcApi {
   async txsByAddress({ address, page = 1, limit = 25, includeEvents = false }) {
