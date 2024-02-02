@@ -3,7 +3,7 @@ const Mongo = require("../../libs/db/mongo");
 const Fullnode = require("../Fullnode");
 const { colors, print } = require("../../base/log");
 const { ethers } = require("ethers");
-const SystemWallets = require("../../config/systemWallets");
+
 
 const POLLING_INTERVAL_MS = Env.getNumber("POLLING_INTERVAL_MS") || 10000;
 const POLLING_SIZE = Env.getNumber("POLLING_SIZE") || 10;
@@ -56,8 +56,8 @@ class Crawler {
     const blockNumber = parseInt(blockData.number);
     //print(colors.h_cyan, `🎼 processBlock ${blockNumber}`);
 
-    // we create a set of all the addresses that are involved in this block
-    const addresses = new Set();
+    // we create a set of all the koziChangeBalances that are involved in this block
+    const koziChangeBalances = new Set();
 
     // we fetch all the transaction receipts from the RPC
     const txReceipts = await Promise.all(
@@ -75,15 +75,11 @@ class Crawler {
         receipt.value = tx.value;
 
         if (tx.value > 0) {
-          // if the transaction has a value, we'll add the sender and receiver to the addresses set
-          if (!SystemWallets.includes(ethers.getAddress(receipt.from))) {
-            addresses.add(ethers.getAddress(receipt.from));
-          }
+          // if the transaction has a value, we'll add the sender and receiver to the koziChangeBalances set
+          koziChangeBalances.add(ethers.getAddress(receipt.from));
 
           if (receipt.to) {
-            if (!SystemWallets.includes(ethers.getAddress(receipt.to))) {
-              addresses.add(ethers.getAddress(receipt.to));
-            }
+            koziChangeBalances.add(ethers.getAddress(receipt.to));
           }
         }
       }
@@ -113,9 +109,9 @@ class Crawler {
       await Mongo.model("transactions").bulkWrite(bulkReceipts);
       print(colors.green, `🎼 Processed ${processedReceipts.length} receipts`);
 
-      // now we'll update the balances of all the addresses that are involved in this block
+      // now we'll update the balances of all the koziChangeBalances that are involved in this block
       const bulkBalances = [];
-      addresses.forEach(async (address) => {
+      koziChangeBalances.forEach(async (address) => {
         // fetch the address' balance directly from the RPC
         const balance = await Fullnode.balanceOf(address);
 
