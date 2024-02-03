@@ -66,27 +66,33 @@ class Crawler {
 
     // let's now process each receipt with the processReceipt function
     const processedReceipts = txReceipts.map((receipt) => this.processReceipt(receipt));
-
-    // now we add the `input` and the `value` fields from the transaction to the receipt
     processedReceipts.forEach((receipt) => {
       const tx = blockData.transactions.find((tx) => tx.hash === receipt.hash);
       if (tx) {
         receipt.input = tx.input;
         receipt.value = tx.value;
 
-        if (tx.value > 0) {
-          print(
-            colors.h_cyan,
-            `🎼 Transaction with value: ${receipt.value} | from: ${receipt.from} | to: ${receipt?.to}`
-          );
-
-          // if the transaction has a value, we'll add the sender and receiver to the koziChangeBalances set
-          koziChangeBalances.add(ethers.getAddress(receipt.from));
-
-          if (receipt.to) {
-            koziChangeBalances.add(ethers.getAddress(receipt.to));
-          }
+        // add the sender and receiver to the koziChangeBalances set
+        koziChangeBalances.add(ethers.getAddress(receipt.from));
+        if (receipt.to) {
+          koziChangeBalances.add(ethers.getAddress(receipt.to));
         }
+
+        // now we need to go through the logs and add ALL addresses that appear there as value of any property, no matter which property, to the koziChangeBalances set
+        receipt.logs.forEach((log) => {
+          log.topics.forEach((topic) => {
+            // Extract the last 40 characters of the topic value
+            const potentialAddress = `0x${topic.slice(topic.length - 40)}`;
+            try {
+              // Validate and convert to checksum address
+              const checksumAddress = ethers.utils.getAddress(potentialAddress);
+              koziChangeBalances.add(checksumAddress);
+            } catch (error) {
+              // If the conversion throws, it's not a valid Ethereum address
+              console.error(`Invalid address found in topic: ${potentialAddress}`, error);
+            }
+          });
+        });
       }
     });
 
