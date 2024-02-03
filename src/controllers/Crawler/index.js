@@ -5,6 +5,7 @@ const Fullnode = require("../Fullnode");
 const { colors, print } = require("../../base/log");
 const { ethers } = require("ethers");
 
+const { SISTEM_WALLETS } = require("../../config/systemWallets");
 const POLLING_INTERVAL_MS = Env.getNumber("POLLING_INTERVAL_MS") || 10000;
 const POLLING_SIZE = Env.getNumber("POLLING_SIZE") || 10;
 
@@ -128,6 +129,12 @@ class Crawler {
 
       for (let i = 0; i < finalAddresses.length; i++) {
         const address = finalAddresses[i];
+
+        // we'll skip the system wallets
+        if (!SISTEM_WALLETS.includes(address)) {
+          continue;
+        }
+
         // fetch the address' balance directly from the RPC
         const balance = await Fullnode.balanceOf(address);
         const formattedBalance = ethers.formatEther(balance);
