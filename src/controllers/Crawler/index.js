@@ -79,20 +79,22 @@ class Crawler {
         }
 
         // now we need to go through the logs and add ALL addresses that appear there as value of any property, no matter which property, to the koziChangeBalances set
-        receipt.logs.forEach((log) => {
-          log.topics.forEach((topic) => {
-            // Extract the last 40 characters of the topic value
-            const potentialAddress = `0x${topic.slice(topic.length - 40)}`;
-            try {
-              // Validate and convert to checksum address
-              const checksumAddress = ethers.utils.getAddress(potentialAddress);
-              koziChangeBalances.add(checksumAddress);
-            } catch (error) {
-              // If the conversion throws, it's not a valid Ethereum address
-              console.error(`Invalid address found in topic: ${potentialAddress}`, error);
-            }
+        if (receipt?.logs && receipt?.logs?.length > 0) {
+          receipt.logs.forEach((log) => {
+            log.topics.forEach((topic) => {
+              // Extract the last 40 characters of the topic value
+              const potentialAddress = `0x${topic.slice(topic.length - 40)}`;
+              try {
+                // Validate and convert to checksum address
+                const checksumAddress = ethers.utils.getAddress(potentialAddress);
+                koziChangeBalances.add(checksumAddress);
+              } catch (error) {
+                // If the conversion throws, it's not a valid Ethereum address
+                console.error(`Invalid address found in topic: ${potentialAddress}`, error);
+              }
+            });
           });
-        });
+        }
       }
     });
 
