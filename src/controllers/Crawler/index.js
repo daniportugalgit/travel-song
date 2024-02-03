@@ -131,7 +131,7 @@ class Crawler {
         const address = finalAddresses[i];
 
         // we'll skip the system wallets
-        if (!SISTEM_WALLETS.includes(address)) {
+        if (SISTEM_WALLETS.includes(address)) {
           continue;
         }
 
