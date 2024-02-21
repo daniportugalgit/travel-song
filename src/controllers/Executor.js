@@ -1,4 +1,4 @@
-const Env = require("../../base/Env");
+const Env = require("../base/Env");
 const Validator = require("../libs/gateway/validator");
 const FirstLight = require("./FirstLight");
 const RpcApi = require("../controllers/rpcApi");
