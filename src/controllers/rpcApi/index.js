@@ -158,6 +158,8 @@ class RpcApi {
     await Mongo.model("latestblocks").deleteMany({});
     await Mongo.model("balances").deleteMany({});
 
+    await Mongo.model("latestblocks").create({ chainId: 39916801, number: 0 });
+
     print(colors.h_magenta, "DATABASE SUCCESSFULLY RESET");
   }
 }
