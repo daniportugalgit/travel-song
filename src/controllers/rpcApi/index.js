@@ -151,10 +151,14 @@ class RpcApi {
   }
 
   async resetDatabase() {
+    print(colors.h_magenta, "RESETTING DATABASE...");
+
     // we'll remove all data from the database
     await Mongo.model("transactions").deleteMany({});
     await Mongo.model("latestblocks").deleteMany({});
     await Mongo.model("balances").deleteMany({});
+
+    print(colors.h_magenta, "DATABASE SUCCESSFULLY RESET");
   }
 }
 
