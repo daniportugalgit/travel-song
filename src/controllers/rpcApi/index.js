@@ -149,6 +149,13 @@ class RpcApi {
 
     return result;
   }
+
+  async resetDatabase() {
+    // we'll remove all data from the database
+    await Mongo.model("transactions").deleteMany({});
+    await Mongo.model("latestblocks").deleteMany({});
+    await Mongo.model("balances").deleteMany({});
+  }
 }
 
 module.exports = new RpcApi();
