@@ -1,0 +1,49 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "VaultSigGuardianV2",
+  "sourceName": "contracts/features/BkVaultV2/sigGuardian/VaultSigGuardianV2.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "lastNonceUpBlock",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "nonces",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b5060e78061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80637ecebe0014603757806388d8d28c146066575b600080fd5b605460423660046083565b60026020526000908152604090205481565b60405190815260200160405180910390f35b605460713660046083565b60036020526000908152604090205481565b600060208284031215609457600080fd5b81356001600160a01b038116811460aa57600080fd5b939250505056fea2646970667358221220ba07194083e571309659367d8c325c4b16bc51e26d9177fcad867b08bf31cf5c64736f6c63430008140033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060325760003560e01c80637ecebe0014603757806388d8d28c146066575b600080fd5b605460423660046083565b60026020526000908152604090205481565b60405190815260200160405180910390f35b605460713660046083565b60036020526000908152604090205481565b600060208284031215609457600080fd5b81356001600160a01b038116811460aa57600080fd5b939250505056fea2646970667358221220ba07194083e571309659367d8c325c4b16bc51e26d9177fcad867b08bf31cf5c64736f6c63430008140033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
