@@ -121,7 +121,7 @@ class RpcApi {
     addresses = await Promise.all(
       addresses.map(async (address) => {
         const balance = await Fullnode.balanceOf(address.address);
-        address.kozi = ethers.utils.formatEther(balance);
+        address.kozi = ethers.formatEther(balance);
         return address;
       })
     );
