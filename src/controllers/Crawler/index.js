@@ -162,7 +162,7 @@ class Crawler {
           }`
         );
 
-        for (let i = 0; i < koziChangeBalances.length; i++) {
+        for (let i = 0; i < koziChangeBalances.size; i++) {
           const address = koziChangeBalances[i];
           const balance = await Fullnode.balanceOf(address);
           const formattedBalance = ethers.formatEther(balance);
