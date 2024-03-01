@@ -1,4 +1,5 @@
 // Receives POSTs via the /rpc endpoint
+import BigNumber from "bignumber.js";
 
 const Mongo = require("../../libs/db/mongo");
 const { ethers } = require("ethers");
@@ -126,7 +127,7 @@ class RpcApi {
 
     // and reorder it by kozi (that is a BigNumber string with 256 bits)
     addresses = addresses.sort((a, b) => {
-      return ethers.BigNumber(b.kozi).minus(ethers.BigNumber(a.kozi));
+      return BigNumber(b.kozi).minus(BigNumber(a.kozi));
     });
 
     // now, let's remove any items that have kozi equal to "0.0"
