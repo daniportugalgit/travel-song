@@ -1,5 +1,5 @@
 // Receives POSTs via the /rpc endpoint
-import BigNumber from "bignumber.js";
+const BigNumber = require("bignumber.js");
 
 const Mongo = require("../../libs/db/mongo");
 const { ethers } = require("ethers");
