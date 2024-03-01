@@ -124,6 +124,11 @@ class RpcApi {
       };
     });
 
+    // and reorder it by kozi (that is a BigNumber string with 256 bits)
+    addresses = addresses.sort((a, b) => {
+      return ethers.BigNumber.from(b.kozi).sub(ethers.BigNumber.from(a.kozi));
+    });
+
     // now, let's remove any items that have kozi equal to "0.0"
     addresses = addresses.filter((address) => address.kozi !== "0.0");
 
