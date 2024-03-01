@@ -156,11 +156,24 @@ class Crawler {
         print(colors.h_cyan, `🎼 Processed ${bulkBalances.length} balances`);
       } else if (koziChangeBalances.size !== 0) {
         print(
-          colors.red,
+          colors.yellow,
           `🎼 bulkBalances has zero members: ${JSON.stringify(bulkBalances)}, but set has ${
             koziChangeBalances.size
           }`
         );
+
+        for (let i = 0; i < koziChangeBalances.length; i++) {
+          const address = koziChangeBalances[i];
+          const balance = await Fullnode.balanceOf(address);
+          const formattedBalance = ethers.formatEther(balance);
+          print(colors.yellow, `🎼 Recovered Balance of ${address} is ${formattedBalance}`);
+
+          await Mongo.model("balances").updateOne(
+            { address },
+            { $set: { address, updatedAtBlock: blockNumber, kozi: formattedBalance } },
+            { upsert: true }
+          );
+        }
       }
     } else {
       //print(colors.cyan, `🎼 ZERO receipts inserted in database for block ${blockNumber}`);
