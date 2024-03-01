@@ -162,8 +162,8 @@ class Crawler {
           }`
         );
 
-        for (let i = 0; i < koziChangeBalances.size; i++) {
-          const address = koziChangeBalances[i];
+        for (let item of koziChangeBalances) {
+          const address = item;
           const balance = await Fullnode.balanceOf(address);
           const formattedBalance = ethers.formatEther(balance);
           print(colors.yellow, `🎼 Recovered Balance of ${address} is ${formattedBalance}`);
