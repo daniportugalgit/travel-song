@@ -131,7 +131,7 @@ class RpcApi {
     });
 
     // now, let's remove any items that have kozi equal to "0.0"
-    addresses = addresses.filter((address) => address.kozi !== "0.0");
+    addresses = addresses.filter((address) => address.kozi !== "0.0" && address.kozi !== "0.00");
 
     const result = {
       success: true,
