@@ -117,6 +117,15 @@ class RpcApi {
       .collation({ locale: "en_US", numericOrdering: true })
       .limit(limit);
 
+    // for each address, let's fetch their kozi balance
+    addresses = await Promise.all(
+      addresses.map(async (address) => {
+        const balance = await Fullnode.balanceOf(address.address);
+        address.kozi = ethers.utils.formatEther(balance);
+        return address;
+      })
+    );
+
     // now let's cleanup the list removing the propertyes _id, __v, and updatedAtBlock
     addresses = addresses.map((address) => {
       return {
