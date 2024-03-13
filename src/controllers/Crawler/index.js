@@ -2,6 +2,7 @@ const Env = require("../../base/Env");
 const BigNumber = require("bignumber.js");
 const Mongo = require("../../libs/db/mongo");
 const Fullnode = require("../Fullnode");
+const State = require("../../base/State");
 const { colors, print } = require("../../base/log");
 const { ethers } = require("ethers");
 
