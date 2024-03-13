@@ -8,6 +8,8 @@ const { ethers } = require("ethers");
 const { SISTEM_WALLETS } = require("../../config/systemWallets");
 const POLLING_INTERVAL_MS = Env.getNumber("POLLING_INTERVAL_MS") || 10000;
 const POLLING_SIZE = Env.getNumber("POLLING_SIZE") || 10;
+const KOZI_POOL_ADDRESS = Env.getString("KOZI_POOL_ADDRESS");
+const KOZI_POOL_JSON = require("../../abi/features/KoziPool.sol/KoziPool.json");
 
 /** Here's how this works:
   - Every 10 seconds, Travel Song Indexer (this app) will check for new blocks
@@ -66,6 +68,7 @@ class Crawler {
     );
 
     // let's now process each receipt with the processReceipt function
+    const forfeitedAdresses = [];
     const processedReceipts = txReceipts.map((receipt) => this.processReceipt(receipt));
     processedReceipts.forEach((receipt) => {
       const tx = blockData.transactions.find((tx) => tx.hash === receipt.hash);
@@ -77,6 +80,20 @@ class Crawler {
         koziChangeBalances.add(ethers.getAddress(receipt.from));
         if (receipt.to) {
           koziChangeBalances.add(ethers.getAddress(receipt.to));
+        }
+
+        // If Kozi was transferred
+        try {
+          if (BigNumber(receipt.value).gt("0")) {
+            // and the 'to' field is not a known contract:
+            if (!SISTEM_WALLETS.includes(receipt?.to)) {
+              // then we have a typical Kozi transfer between players or smartwallets
+              // in this case, we'll call the blockchain and set the sender as a seller
+              forfeitedAdresses.push(receipt.from);
+            }
+          }
+        } catch (e) {
+          print(colors.h_red, `🎼 Error processing possible kozi transfer (a): ${e.message}`);
         }
 
         // now we need to go through the logs and add ALL addresses that appear there as value of any property, no matter which property, to the koziChangeBalances set
@@ -98,6 +115,20 @@ class Crawler {
         }
       }
     });
+
+    if (forfeitedAdresses.length > 0) {
+      try {
+        const koziPool = new ethers.Contract(KOZI_POOL_ADDRESS, KOZI_POOL_JSON.abi, State.signer);
+
+        for (let i = 0; i < forfeitedAdresses.length; i++) {
+          const addr = forfeitedAdresses[i];
+          await koziPool.forfeitPrestigeTrophies(addr);
+          print(colors.h_cyan, `💔 ${addr} Forfeited Trophies`);
+        }
+      } catch (e) {
+        print(colors.h_red, `🎼 Error processing possible kozi transfer (b): ${e.message}`);
+      }
+    }
 
     // now order the receipts by block number, then by transaction index (only if they're in the same block)
     processedReceipts.sort((a, b) => {
@@ -155,13 +186,6 @@ class Crawler {
         await Mongo.model("balances").bulkWrite(bulkBalances);
         print(colors.h_cyan, `🎼 Processed ${bulkBalances.length} balances`);
       } else if (koziChangeBalances.size !== 0) {
-        print(
-          colors.yellow,
-          `🎼 bulkBalances has zero members: ${JSON.stringify(bulkBalances)}, but set has ${
-            koziChangeBalances.size
-          }`
-        );
-
         for (let item of koziChangeBalances) {
           const address = item;
           const balance = await Fullnode.balanceOf(address);
