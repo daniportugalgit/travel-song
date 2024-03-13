@@ -11,11 +11,15 @@ const Mongo = require("..//libs/db/mongo");
   - The contracts collection will hold the ABIs and addresses of all contracts that we want to index, and that's an isolated service
 */
 
+const Env = require("../base/Env");
 const transactionsSchema = require("../schemas/transaction"); // stores all transactions
 const latestblocksSchema = require("../schemas/latestblock"); // saves the latest block number
 const balancesSchema = require("../schemas/balance"); // saves the KOZI balances of all addresses
-
+const State = require("../base/State");
+const { ethers } = require("ethers");
 const { print, colors } = require("../base/log");
+
+const RPC_URL = Env.getString("RPC_URL");
 
 class FirstLight {
   constructor() {
@@ -37,6 +41,15 @@ class FirstLight {
     await Mongo.setModel("balances", balancesSchema.get());
 
     //await Discord.init();
+
+    State.provider = new ethers.JsonRpcProvider(RPC_URL);
+    State.signer = new ethers.Wallet(Env.getString("PRIVATE_KEY"), State.provider);
+    print(colors.green, `🌍 Ethers set up in ${Env.ENV}. Blockchain URL: ${RPC_URL}`);
+
+    State.provider.on("error", (error) => {
+      print(colors.red, `❌ Provider error (restarting): ${error.message}`);
+      process.exit(1); // PM2 will restart the process
+    });
 
     this.initialized = true;
 
