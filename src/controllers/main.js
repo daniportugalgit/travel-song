@@ -4,6 +4,8 @@ const { extract } = require("../libs/gateway/userAgentExtractor");
 const requestIp = require("request-ip");
 
 const DEBUG_INCOMIG_TRAFFIC = true;
+const BLOCKLIST = ["45.161.237.250"];
+const USE_BLOCKLIST = true;
 
 async function init() {
   await Executor.init();
@@ -16,6 +18,13 @@ async function parseRequest(req, res) {
   if (DEBUG_INCOMIG_TRAFFIC) {
     const userAgent = extract(req.headers["user-agent"]);
     userAgent.IP = requestIp.getClientIp(req);
+
+    if (USE_BLOCKLIST) {
+      if (BLOCKLIST.includes(userAgent.IP)) {
+        print(colors.h_red, `🚫 -> Blocked IP: ${userAgent.IP}`);
+        return res.status(400).json({ success: false, message: "Blocked IP" });
+      }
+    }
 
     print(colors.h_magenta, `🎼 -> UserAgent: ${JSON.stringify(userAgent, null, 2)}`);
   }
