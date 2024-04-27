@@ -1,5 +1,8 @@
 const { colors, print } = require("../base/log");
 const Executor = require("./Executor");
+const { extract } = require("../libs/gateway/userAgentExtractor");
+
+const DEBUG_INCOMIG_TRAFFIC = true;
 
 async function init() {
   await Executor.init();
@@ -8,6 +11,11 @@ async function init() {
 async function parseRequest(req, res) {
   const path = String(req.path).replace("/", "");
   print(colors.cyan, `Incoming: ${req.path}\n${JSON.stringify(req.body, null, 2)}`);
+
+  if (DEBUG_INCOMIG_TRAFFIC) {
+    const userAgent = extract(req.headers["user-agent"]);
+    print(colors.h_magenta, `🎼 -> UserAgent: ${JSON.stringify(userAgent, null, 2)}`);
+  }
 
   try {
     const body = await Executor[path](req);
