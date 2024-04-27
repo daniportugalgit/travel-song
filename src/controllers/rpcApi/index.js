@@ -8,11 +8,21 @@ const Fullnode = require("../Fullnode");
 const { print, colors } = require("../../base/log");
 const { SISTEM_WALLETS } = require("../../config/systemWallets");
 
+const { extract } = require("../../libs/gateway/userAgentExtractor");
+
+const DEBUG_INCOMIG_TRAFFIC = true;
+
 class RpcApi {
-  async txsByAddress({ address, page = 1, limit = 25, includeEvents = false }) {
+  async txsByAddress({ address, page = 1, limit = 25, includeEvents = false, from = null }) {
     try {
       address = ethers.getAddress(address);
-      console.log(`🎼 txsByAddress ${address} | page: ${page} | limit: ${limit}`);
+
+      console.log(`🎼 txsByAddress ${address} | page: ${page} | limit: ${limit}\nFrom: ${from}`);
+
+      if (DEBUG_INCOMIG_TRAFFIC) {
+        const userAgent = extract(from);
+        print(colors.h_magenta, `🎼 -> UserAgent: ${JSON.stringify(userAgent, null, 2)}`);
+      }
     } catch (e) {
       return {
         success: false,
