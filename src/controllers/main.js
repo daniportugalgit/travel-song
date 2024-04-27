@@ -3,9 +3,9 @@ const Executor = require("./Executor");
 const { extract } = require("../libs/gateway/userAgentExtractor");
 const requestIp = require("request-ip");
 
-const DEBUG_INCOMIG_TRAFFIC = true;
+const DEBUG_INCOMIG_TRAFFIC = false;
 const BLOCKLIST = ["45.161.237.250"];
-const USE_BLOCKLIST = true;
+const USE_BLOCKLIST = false;
 
 async function init() {
   await Executor.init();
