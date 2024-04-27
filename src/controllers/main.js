@@ -1,6 +1,7 @@
 const { colors, print } = require("../base/log");
 const Executor = require("./Executor");
 const { extract } = require("../libs/gateway/userAgentExtractor");
+const requestIp = require("request-ip");
 
 const DEBUG_INCOMIG_TRAFFIC = true;
 
@@ -14,6 +15,8 @@ async function parseRequest(req, res) {
 
   if (DEBUG_INCOMIG_TRAFFIC) {
     const userAgent = extract(req.headers["user-agent"]);
+    userAgent.IP = requestIp.getClientIp(req);
+
     print(colors.h_magenta, `🎼 -> UserAgent: ${JSON.stringify(userAgent, null, 2)}`);
   }
 
